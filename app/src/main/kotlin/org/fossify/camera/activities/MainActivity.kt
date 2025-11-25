@@ -45,13 +45,16 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, CameraXPreviewListener {
-    private companion object {
-        private const val ANIMATION_DURATION = 500L
-        private const val PHOTO_MODE_INDEX = 1
-        private const val VIDEO_MODE_INDEX = 0
-        private const val MIN_SWIPE_DISTANCE_X = 100
-        private const val TIMER_2_SECONDS = 2001
-        private const val SWITCH_CAMERA_ROTATION_ANGLE = 180f
+    companion object {
+        const val ANIMATION_DURATION = 500L
+        const val PHOTO_MODE_INDEX = 1
+        const val VIDEO_MODE_INDEX = 0
+        const val CIRCLE_MODE_INDEX = 2
+        const val HISTORY_MODE_INDEX = 3
+        const val MIN_SWIPE_DISTANCE_X = 100
+        const val TIMER_2_SECONDS = 2001
+        const val SWITCH_CAMERA_ROTATION_ANGLE = 180f
+        const val CAMERA_MODE_KEY = "camera_mode"
     }
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -71,19 +74,47 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     private val tabSelectedListener = object : TabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            handlePermission(PERMISSION_RECORD_AUDIO) {
-                if (it) {
-                    when (tab.position) {
-                        VIDEO_MODE_INDEX -> mPreview?.initVideoMode()
-                        PHOTO_MODE_INDEX -> mPreview?.initPhotoMode()
-                        else -> throw IllegalStateException("Unsupported tab position ${tab.position}")
+            when (tab.position) {
+                CIRCLE_MODE_INDEX -> {
+                    startActivity(Intent(this@MainActivity, CircleActivity::class.java))
+                    // Keep current camera mode selected
+                    if (isInPhotoMode()) {
+                        selectPhotoTab()
+                    } else {
+                        selectVideoTab()
                     }
-                } else {
-                    toast(org.fossify.commons.R.string.no_audio_permissions)
-                    selectPhotoTab()
-                    if (isVideoCaptureIntent()) {
-                        finish()
+                }
+
+                HISTORY_MODE_INDEX -> {
+                    startActivity(Intent(this@MainActivity, HistoryActivity::class.java))
+                    // Keep current camera mode selected
+                    if (isInPhotoMode()) {
+                        selectPhotoTab()
+                    } else {
+                        selectVideoTab()
                     }
+                }
+
+                VIDEO_MODE_INDEX -> {
+                    handlePermission(PERMISSION_RECORD_AUDIO) { granted ->
+                        if (granted) {
+                            mPreview?.initVideoMode()
+                        } else {
+                            toast(org.fossify.commons.R.string.no_audio_permissions)
+                            selectPhotoTab()
+                            if (isVideoCaptureIntent()) {
+                                finish()
+                            }
+                        }
+                    }
+                }
+
+                PHOTO_MODE_INDEX -> {
+                    mPreview?.initPhotoMode()
+                }
+
+                else -> {
+                    throw IllegalStateException("Unsupported tab position ${tab.position}")
                 }
             }
         }
@@ -492,13 +523,40 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     private fun onSwipeLeft() {
         if (!isThirdPartyIntent() && binding.cameraModeHolder.isVisible()) {
-            selectPhotoTab(triggerListener = true)
+            val current = binding.cameraModeTab.selectedTabPosition
+            val lastIndex = binding.cameraModeTab.tabCount - 1
+
+            val target = if (current == TabLayout.Tab.INVALID_POSITION) {
+                PHOTO_MODE_INDEX
+            } else {
+                (current + 1).coerceAtMost(lastIndex)
+            }
+
+            when (target) {
+                VIDEO_MODE_INDEX -> selectVideoTab(triggerListener = true)
+                PHOTO_MODE_INDEX -> selectPhotoTab(triggerListener = true)
+                CIRCLE_MODE_INDEX -> binding.cameraModeTab.getTabAt(CIRCLE_MODE_INDEX)?.select()
+                HISTORY_MODE_INDEX -> binding.cameraModeTab.getTabAt(HISTORY_MODE_INDEX)?.select()
+            }
         }
     }
 
     private fun onSwipeRight() {
         if (!isThirdPartyIntent() && binding.cameraModeHolder.isVisible()) {
-            selectVideoTab(triggerListener = true)
+            val current = binding.cameraModeTab.selectedTabPosition
+
+            val target = if (current == TabLayout.Tab.INVALID_POSITION) {
+                VIDEO_MODE_INDEX
+            } else {
+                (current - 1).coerceAtLeast(0)
+            }
+
+            when (target) {
+                VIDEO_MODE_INDEX -> selectVideoTab(triggerListener = true)
+                PHOTO_MODE_INDEX -> selectPhotoTab(triggerListener = true)
+                CIRCLE_MODE_INDEX -> binding.cameraModeTab.getTabAt(CIRCLE_MODE_INDEX)?.select()
+                HISTORY_MODE_INDEX -> binding.cameraModeTab.getTabAt(HISTORY_MODE_INDEX)?.select()
+            }
         }
     }
 

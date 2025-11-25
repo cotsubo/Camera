@@ -42,6 +42,10 @@
     <string name="front_camera">Front camera resolutions</string>
     <string name="photo">Photo</string>
     <string name="video">Video</string>
+    <string name="circle">Circle</string>
+    <string name="circle_page_placeholder">Circle features coming soon</string>
+    <string name="history">History</string>
+    <string name="history_page_placeholder">History features coming soon</string>
     <string name="focus_before_capture">Focus before capture</string>
     <string name="volume_buttons_as_shutter">Use volume buttons as shutter</string>
     <string name="turn_flash_off_at_startup">Turn flash off at startup</string>

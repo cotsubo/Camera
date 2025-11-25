@@ -397,5 +397,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
+        
+        <!-- CircleActivity: Circle features page -->
+        <activity
+            android:name=".activities.CircleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/circle"
+            android:parentActivityName=".activities.MainActivity" />
+            
+        <!-- HistoryActivity: History features page -->
+        <activity
+            android:name=".activities.HistoryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/history"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 </manifest>
