@@ -56,6 +56,28 @@
     <string name="save_photo_video_location">Save photo and video location</string>
     <string name="photo_compression_quality">Photo compression quality</string>
     <string name="shutter">Shutter</string>
+    
+    <!-- Media History -->
+    <string name="media_thumbnail">Media thumbnail</string>
+    <string name="video_indicator">Video indicator</string>
+    <string name="upload_status">Upload status</string>
+    <string name="no_media_found">No media captured yet</string>
+    <string name="file_not_found">File not found</string>
+    <string name="no_app_found">No app found to open this file</string>
+    
+    <!-- Settings - Server Upload -->
+    <string name="server_upload">Server Upload</string>
+    <string name="use_isolated_storage">Use isolated storage</string>
+    <string name="use_isolated_storage_summary">Save photos and videos in app-private folder</string>
+    <string name="auto_upload">Auto upload to server</string>
+    <string name="auto_upload_summary">Automatically upload captured media</string>
+    <string name="server_url">Server URL</string>
+    <string name="server_url_hint">https://your-server.com/api/</string>
+    <string name="server_auth_token">Authentication token</string>
+    <string name="server_auth_token_hint">Bearer token for API</string>
+    <string name="upload_only_on_wifi">Upload only on WiFi</string>
+    <string name="upload_only_on_wifi_summary">Avoid mobile data usage</string>
+    
     <!--
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res

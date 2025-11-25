@@ -99,4 +99,24 @@ class Config(context: Context) : BaseConfig(context) {
             ?: TimerMode.OFF
         set(timerMode) = prefs.edit().putInt(TIMER_MODE, timerMode.ordinal).apply()
 
+    var useIsolatedStorage: Boolean
+        get() = prefs.getBoolean(USE_ISOLATED_STORAGE, true)
+        set(useIsolatedStorage) = prefs.edit().putBoolean(USE_ISOLATED_STORAGE, useIsolatedStorage).apply()
+
+    var serverUrl: String
+        get() = prefs.getString(SERVER_URL, "") ?: ""
+        set(serverUrl) = prefs.edit().putString(SERVER_URL, serverUrl).apply()
+
+    var serverAuthToken: String
+        get() = prefs.getString(SERVER_AUTH_TOKEN, "") ?: ""
+        set(serverAuthToken) = prefs.edit().putString(SERVER_AUTH_TOKEN, serverAuthToken).apply()
+
+    var autoUploadEnabled: Boolean
+        get() = prefs.getBoolean(AUTO_UPLOAD_ENABLED, false)
+        set(autoUploadEnabled) = prefs.edit().putBoolean(AUTO_UPLOAD_ENABLED, autoUploadEnabled).apply()
+
+    var uploadOnlyOnWifi: Boolean
+        get() = prefs.getBoolean(UPLOAD_ONLY_ON_WIFI, true)
+        set(uploadOnlyOnWifi) = prefs.edit().putBoolean(UPLOAD_ONLY_ON_WIFI, uploadOnlyOnWifi).apply()
+
 }

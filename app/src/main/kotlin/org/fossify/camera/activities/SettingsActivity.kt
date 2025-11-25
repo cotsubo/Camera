@@ -46,6 +46,11 @@ class SettingsActivity : SimpleActivity() {
         setupSavePhotosFolder()
         setupPhotoQuality()
         setupCaptureMode()
+        setupUseIsolatedStorage()
+        setupAutoUpload()
+        setupServerUrl()
+        setupServerAuthToken()
+        setupUploadOnlyOnWifi()
         updateTextColors(binding.settingsHolder)
 
         val properPrimaryColor = getProperPrimaryColor()
@@ -55,6 +60,7 @@ class SettingsActivity : SimpleActivity() {
                 settingsGeneralSettingsLabel,
                 settingsShutterLabel,
                 settingsSavingLabel,
+                settingsServerUploadLabel,
             ).forEach {
                 it.setTextColor(properPrimaryColor)
             }
@@ -277,5 +283,83 @@ class SettingsActivity : SimpleActivity() {
 
     private fun updateCaptureMode(captureMode: CaptureMode) {
         binding.settingsCaptureMode.text = getString(captureMode.stringResId)
+    }
+
+    private fun setupUseIsolatedStorage() = binding.apply {
+        settingsUseIsolatedStorage.isChecked = config.useIsolatedStorage
+        settingsUseIsolatedStorageHolder.setOnClickListener {
+            settingsUseIsolatedStorage.toggle()
+            config.useIsolatedStorage = settingsUseIsolatedStorage.isChecked
+        }
+    }
+
+    private fun setupAutoUpload() = binding.apply {
+        settingsAutoUpload.isChecked = config.autoUploadEnabled
+        settingsAutoUploadHolder.setOnClickListener {
+            settingsAutoUpload.toggle()
+            config.autoUploadEnabled = settingsAutoUpload.isChecked
+        }
+    }
+
+    private fun setupServerUrl() = binding.apply {
+        settingsServerUrl.text = config.serverUrl
+        settingsServerUrlHolder.setOnClickListener {
+            ConfirmationAdvancedDialog(
+                this@SettingsActivity,
+                "",
+                org.fossify.commons.R.string.title,
+                org.fossify.commons.R.string.ok,
+                org.fossify.commons.R.string.cancel,
+                callback = { success ->
+                    if (success) {
+                        val input = (it as ConfirmationAdvancedDialog).findViewById<android.widget.EditText>(org.fossify.commons.R.id.dialog_input_edittext)
+                        val url = input.text.toString()
+                        config.serverUrl = url
+                        settingsServerUrl.text = url
+                    }
+                }
+            ) {
+                val view = layoutInflater.inflate(org.fossify.commons.R.layout.dialog_text_input, null)
+                val editText = view.findViewById<android.widget.EditText>(org.fossify.commons.R.id.dialog_input_edittext)
+                editText.setText(config.serverUrl)
+                editText.hint = getString(R.string.server_url_hint)
+                setView(view)
+            }
+        }
+    }
+
+    private fun setupServerAuthToken() = binding.apply {
+        settingsServerAuthToken.text = if (config.serverAuthToken.isEmpty()) "" else "••••••••"
+        settingsServerAuthTokenHolder.setOnClickListener {
+            ConfirmationAdvancedDialog(
+                this@SettingsActivity,
+                "",
+                org.fossify.commons.R.string.title,
+                org.fossify.commons.R.string.ok,
+                org.fossify.commons.R.string.cancel,
+                callback = { success ->
+                    if (success) {
+                        val input = (it as ConfirmationAdvancedDialog).findViewById<android.widget.EditText>(org.fossify.commons.R.id.dialog_input_edittext)
+                        val token = input.text.toString()
+                        config.serverAuthToken = token
+                        settingsServerAuthToken.text = if (token.isEmpty()) "" else "••••••••"
+                    }
+                }
+            ) {
+                val view = layoutInflater.inflate(org.fossify.commons.R.layout.dialog_text_input, null)
+                val editText = view.findViewById<android.widget.EditText>(org.fossify.commons.R.id.dialog_input_edittext)
+                editText.hint = getString(R.string.server_auth_token_hint)
+                editText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                setView(view)
+            }
+        }
+    }
+
+    private fun setupUploadOnlyOnWifi() = binding.apply {
+        settingsUploadOnlyOnWifi.isChecked = config.uploadOnlyOnWifi
+        settingsUploadOnlyOnWifiHolder.setOnClickListener {
+            settingsUploadOnlyOnWifi.toggle()
+            config.uploadOnlyOnWifi = settingsUploadOnlyOnWifi.isChecked
+        }
     }
 }

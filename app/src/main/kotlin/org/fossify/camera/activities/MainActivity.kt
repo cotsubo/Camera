@@ -16,7 +16,9 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.*
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -24,8 +26,12 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.fossify.camera.BuildConfig
 import org.fossify.camera.R
+import org.fossify.camera.database.SimpleMediaStorage
 import org.fossify.camera.databinding.ActivityMainBinding
 import org.fossify.camera.extensions.config
 import org.fossify.camera.extensions.fadeIn
@@ -787,6 +793,14 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
     override fun onMediaSaved(uri: Uri) {
         binding.layoutTop.changeResolution.isEnabled = true
         loadLastTakenMedia(uri)
+        
+        // Save media to database and trigger upload
+        if (config.useIsolatedStorage) {
+            lifecycleScope.launch {
+                saveMediaToDatabase(uri)
+            }
+        }
+        
         if (isImageCaptureIntent()) {
             Intent().apply {
                 data = uri
@@ -801,6 +815,37 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
                 setResult(RESULT_OK, this)
             }
             finish()
+        }
+    }
+    
+    private suspend fun saveMediaToDatabase(uri: Uri) = withContext(Dispatchers.IO) {
+        try {
+            val path = uri.path ?: return@withContext
+            val file = java.io.File(path)
+            if (!file.exists()) return@withContext
+            
+            val mimeType = contentResolver.getType(uri) ?: return@withContext
+            val isPhoto = mimeType.startsWith("image/")
+            
+            val media = org.fossify.camera.models.CapturedMedia(
+                filePath = file.absolutePath,
+                fileName = file.name,
+                mimeType = mimeType,
+                isPhoto = isPhoto,
+                timestamp = System.currentTimeMillis(),
+                fileSize = file.length()
+            )
+            
+            val storage = SimpleMediaStorage.getInstance(applicationContext)
+            val mediaId = storage.insertMedia(media)
+            
+            // Trigger upload if enabled
+            if (config.autoUploadEnabled && config.serverUrl.isNotEmpty()) {
+                val uploadWork = org.fossify.camera.workers.MediaUploadWorker.createWorkRequest(mediaId)
+                WorkManager.getInstance(applicationContext).enqueue(uploadWork)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

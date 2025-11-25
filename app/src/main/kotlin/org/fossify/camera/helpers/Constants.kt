@@ -22,6 +22,11 @@ const val SAVE_PHOTO_VIDEO_LOCATION = "save_photo_video_location"
 const val PHOTO_QUALITY = "photo_quality"
 const val CAPTURE_MODE = "capture_mode"
 const val TIMER_MODE = "timer_mode"
+const val USE_ISOLATED_STORAGE = "use_isolated_storage"
+const val SERVER_URL = "server_url"
+const val SERVER_AUTH_TOKEN = "server_auth_token"
+const val AUTO_UPLOAD_ENABLED = "auto_upload_enabled"
+const val UPLOAD_ONLY_ON_WIFI = "upload_only_on_wifi"
 
 const val FLASH_OFF = 0
 const val FLASH_ON = 1

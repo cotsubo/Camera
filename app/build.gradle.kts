@@ -31,7 +31,7 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
-        setProperty("archivesBaseName", "camera-$versionCode")
+        // setProperty("archivesBaseName", "camera-$versionCode")
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -141,5 +141,20 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.window)
+    
+    // Network and upload dependencies
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    
+    // Room database for tracking uploads - temporarily disabled due to KSP compatibility
+    // implementation("androidx.room:room-runtime:2.6.1")
+    // implementation("androidx.room:room-ktx:2.6.1")
+    // ksp("androidx.room:room-compiler:2.6.1")
+    
+    // WorkManager for background uploads
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    
     detektPlugins(libs.compose.detekt)
 }

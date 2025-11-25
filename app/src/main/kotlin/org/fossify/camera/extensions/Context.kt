@@ -12,8 +12,20 @@ import java.util.Locale
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
 
+fun Context.getIsolatedMediaDir(): File {
+    val dir = File(getExternalFilesDir(null), "Camera")
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+    return dir
+}
+
 fun Context.getOutputMediaFilePath(isPhoto: Boolean): String {
-    val mediaStorageDir = File(config.savePhotosFolder)
+    val mediaStorageDir = if (config.useIsolatedStorage) {
+        getIsolatedMediaDir()
+    } else {
+        File(config.savePhotosFolder)
+    }
 
     if (!mediaStorageDir.exists()) {
         if (!mediaStorageDir.mkdirs()) {

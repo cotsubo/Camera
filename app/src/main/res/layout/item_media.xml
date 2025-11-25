@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <ImageView
+            android:id="@+id/media_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/media_thumbnail" />
+
+        <!-- Video play icon overlay -->
+        <ImageView
+            android:id="@+id/media_type_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_videocam_vector"
+            android:visibility="gone"
+            android:contentDescription="@string/video_indicator"
+            app:tint="@android:color/white"
+            android:alpha="0.9" />
+
+        <!-- Upload status icon in top-right corner -->
+        <ImageView
+            android:id="@+id/upload_status_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            android:contentDescription="@string/upload_status"
+            app:tint="@android:color/white" />
+
+        <!-- Timestamp at bottom -->
+        <TextView
+            android:id="@+id/media_timestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#80000000"
+            android:padding="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:gravity="center" />
+    </FrameLayout>
+</androidx.cardview.widget.CardView>
